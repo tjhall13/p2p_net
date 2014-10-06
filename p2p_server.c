@@ -1,6 +1,9 @@
 #include <netinet/in.h>
 #include <stdio.h>
 
+#include <signal.h>
+#include <unistd.h>
+
 #include <sys/types.h>
 #include <sys/select.h>
 
@@ -13,6 +16,14 @@
 struct server_cntxt s_ctx;
 
 static struct sockaddr_in _local_addr = { 0 };
+
+static int serv_running;
+
+static void serv_sig_handler(int signo) {
+    if(signo == SIGINT) {
+        serv_running = 0;
+    }
+}
 
 static int init_server_cntxt(struct server_cntxt *ctx) {
     int optval = 1;
@@ -75,6 +86,12 @@ int init_p2p_server() {
     }
     
     _init = 1;
+    
+    serv_running = 0;
+    if(signal(SIGINT, serv_sig_handler) == SIG_ERR) {
+        return -1;
+    }
+    
     return 0;
 }
 
@@ -108,7 +125,8 @@ int p2p_server_loop() {
     
     int nfds = s_ctx.icmp_listen + 1;
     
-    while(1) {
+    serv_running = 1;
+    while(serv_running) {
         if(FAILED(fd)) {
             return -1;
         }

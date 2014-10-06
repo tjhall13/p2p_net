@@ -7,9 +7,10 @@
 #include <p2p_pkt.h>
 #include <p2p_server.h>
 
+#define IP_BCAST_SZ 32
 #define UDP_BCAST_SZ 12
 
-uint8_t bcast_pkt[IP_BCAST_SZ];
+static uint8_t bcast_pkt[IP_BCAST_SZ];
 
 static struct sockaddr_in bcast_addr = { 0 };
 
@@ -77,8 +78,8 @@ int init_p2p_client_pkt(struct sockaddr_in *addr) {
     int val = _init_p2p_pkt();
     
     struct iphdr *ip = (struct iphdr *) bcast_pkt;
-    ip->saddr = addr->sin_addr.s_addr;
     ip->ttl   = 0x01;
+    ip->saddr = addr->sin_addr.s_addr;
     ip->check = checksum(ip, sizeof(*ip));
     
     struct udphdr *udp = (struct udphdr *) ((void *) ip + sizeof(*ip));
@@ -94,6 +95,8 @@ int init_p2p_server_pkt() {
     
     struct iphdr *ip = (struct iphdr *) bcast_pkt;
     ip->ttl   = 0x40;
+    ip->saddr = 0; // ip->saddr is filled in when 0
+    ip->check = 0; // ip->check is filled in when 0
     
     struct udphdr *udp = (struct udphdr *) ((void *) ip + sizeof(*ip));
     udp->source = htons(BCAST_PORT);
