@@ -78,7 +78,7 @@ int init_p2p_client_pkt(struct sockaddr_in *addr) {
     int val = _init_p2p_pkt();
     
     struct iphdr *ip = (struct iphdr *) bcast_pkt;
-    ip->ttl   = 0x01;
+    ip->ttl   = 0x40;
     ip->saddr = addr->sin_addr.s_addr;
     ip->check = checksum(ip, sizeof(*ip));
     
@@ -107,4 +107,8 @@ int init_p2p_server_pkt() {
 
 int bcast_udp_pkt(int udp_sock) {
     return sendto(udp_sock, bcast_pkt, sizeof(bcast_pkt), 0, (struct sockaddr *) &bcast_addr, sizeof(bcast_addr));
+}
+
+int bcast_icmp_resp_pkt(int icmp_sock) {
+    return sendto(icmp_sock, bcast_pkt, sizeof(bcast_pkt), 0, (struct sockaddr *) &bcast_addr, sizeof(bcast_addr));
 }

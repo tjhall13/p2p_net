@@ -125,6 +125,8 @@ int p2p_server_loop() {
     
     int nfds = s_ctx.icmp_listen + 1;
     
+    char buf[20];
+    
     serv_running = 1;
     while(serv_running) {
         if(FAILED(fd)) {
@@ -137,7 +139,8 @@ int p2p_server_loop() {
             bcast_udp_pkt(s_ctx.udp_bcast);
             stun_retrieve(s_ctx.stun_req, &server_addr);
             
-            printf("%d\n", ntohs(server_addr.sin_port));
+            inet_ntop(AF_INET, &server_addr.sin_addr, &buf, sizeof(buf));
+            printf("%s:%d\n", buf, ntohs(server_addr.sin_port));
         } else {
             handle_fd(&s_ctx, &s_fds);
         }

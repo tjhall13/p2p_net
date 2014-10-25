@@ -3,21 +3,28 @@ LD = gcc
 CFLAGS = -I .
 LFLAGS = -lcrypto
 
-OBJECTS = p2p_server.o p2p_stun.o p2p_bcast_pkt.o
+OBJECTS = p2p_server.o p2p_client.o p2p_stun.o p2p_bcast_pkt.o
 
-all: test
+all: server client
 
 install: all
-	chown root ./test
-	chgrp root ./test
-	chmod 755 ./test
-	chmod u+s ./test
+	chown root ./server
+	chgrp root ./server
+	chmod 755 ./server
+	chmod u+s ./server
+	chmod root ./client
+	chgrp root ./client
+	chmod 755 ./client
+	chmod u+s ./client
 
-test: $(OBJECTS) test.o
+server: $(OBJECTS) test_server.o
+	$(LD) $^ $(LFLAGS) -o $@
+
+client: $(OBJECTS) test_client.o
 	$(LD) $^ $(LFLAGS) -o $@
 
 .c.o:
 	$(CC) $(CFLAGS) $< -c
 
 clean:
-	$(RM) $(OBJECTS) test.o test
+	$(RM) $(OBJECTS) test_server.o server test_client.o client

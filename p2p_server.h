@@ -3,7 +3,7 @@
 
 #define BCAST_PORT 4723
 
-typedef int socket_t;
+typedef unsigned int socket_t;
 
 struct server_cntxt {
     socket_t udp_bcast;
