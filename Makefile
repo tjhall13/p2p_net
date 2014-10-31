@@ -12,7 +12,7 @@ install: all
 	chgrp root ./server
 	chmod 755 ./server
 	chmod u+s ./server
-	chmod root ./client
+	chown root ./client
 	chgrp root ./client
 	chmod 755 ./client
 	chmod u+s ./client
